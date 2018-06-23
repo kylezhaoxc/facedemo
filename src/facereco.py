@@ -9,7 +9,7 @@ class face_reco:
         self.knownNames=[]
 
     def init_with_images(self,folderpath):
-        if(os.path.isfile(folderpath+"/bak_face.json") and os.path.isfile(folderpath+"\\bak_name.json")):
+        if(os.path.isfile(folderpath+"/bak_face.json") and os.path.isfile(folderpath+"/bak_name.json")):
                 print("predifined model found, skipping loading images...")
                 facef = open(folderpath+"/bak_face.json","rb")
                 namef = open(folderpath+"/bak_name.json","rb")
