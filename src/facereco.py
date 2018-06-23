@@ -9,10 +9,10 @@ class face_reco:
         self.knownNames=[]
 
     def init_with_images(self,folderpath):
-        if(os.path.isfile(folderpath+"\\bak_face.json") and os.path.isfile(folderpath+"\\bak_name.json")):
+        if(os.path.isfile(folderpath+"/bak_face.json") and os.path.isfile(folderpath+"\\bak_name.json")):
                 print("predifined model found, skipping loading images...")
-                facef = open(folderpath+"\\bak_face.json","rb")
-                namef = open(folderpath+"\\bak_name.json","rb")
+                facef = open(folderpath+"/bak_face.json","rb")
+                namef = open(folderpath+"/bak_name.json","rb")
                 self.knownFaces = pickle.loads(facef.read())
                 self.knownNames = pickle.loads(namef.read())
                 print(len(self.knownNames))
@@ -29,8 +29,8 @@ class face_reco:
                     
                     self.knownFaces.append(encoding)
                     self.knownNames.append(name)
-        facef = open(folderpath+"\\bak_face.json","wb")
-        namef = open(folderpath+"\\bak_name.json","wb")
+        facef = open(folderpath+"/bak_face.json","wb")
+        namef = open(folderpath+"/bak_name.json","wb")
         facef.write(pickle.dumps(self.knownFaces))
         namef.write(pickle.dumps(self.knownNames))
         print("Ready to go!")

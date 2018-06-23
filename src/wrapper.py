@@ -1,8 +1,8 @@
 import cv2
 from facereco import face_reco
 
-rootdir = "D:\\facedemo\\imgs"
-blackListDir = "D:\\facedemo\\blacklist"
+rootdir = "/home/hd/refImg"
+blackListDir = "/home/hd/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
 blacklist_handler = face_reco()
