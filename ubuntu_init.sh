@@ -28,5 +28,6 @@ cd ~ && \
     cd  dlib/ && \
     python3 setup.py install --yes USE_AVX_INSTRUCTIONS
 pip3 install face_recognition
+pip3 install opencv-python
 cd ~
 git clone https://github.com/kylezhaoxc/facedemo.git
