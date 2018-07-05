@@ -1,14 +1,18 @@
 import cv2
 from facereco import face_reco
-
-rootdir = "/home/hd/refImg"
-blackListDir = "/home/hd/blackList"
+import datetime
+rootdir = "/home/pi/refImg"
+blackListDir = "/home/pi/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
 blacklist_handler = face_reco()
 blacklist_handler.init_with_images(blackListDir)
 
 video_capture = cv2.VideoCapture(0)
+videoIndex = 0
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
+starttime = datetime.datetime.now()
 NoFaceCountDown = -10
 MatchBlackList = False
 process_this_frame = True
@@ -67,6 +71,14 @@ while True:
             NoFaceCountDown=50
     # Display the resulting image
     cv2.imshow('Video', frame)
+    out.write(frame)
+    curr = datetime.datetime.now()
+    if (curr-starttime).total_seconds()>3600:
+        starttime=curr
+        out.release()
+        videoIndex = videoIndex+1
+        out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+out.release()
