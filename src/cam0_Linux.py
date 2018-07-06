@@ -2,6 +2,10 @@ import cv2
 from facereco import face_reco
 import datetime
 import checkSum
+from multiprocessing.pool import ThreadPool
+
+
+pool = ThreadPool(processes=4)
 
 rootdir = "/home/pi/refImg"
 blackListDir = "/home/pi/blackList"
