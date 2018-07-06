@@ -53,7 +53,7 @@ def handleframe(frame):
             result = handler.process_one_pic(rgb_small_frame)
             locs = result[0]
             names=result[1]
-        process_this_frame=20
+        process_this_frame=12
         #print("reset!")
     else:
         process_this_frame = process_this_frame-1
