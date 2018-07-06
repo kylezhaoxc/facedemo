@@ -39,7 +39,7 @@ def handleframe(frame):
     # Only process every other frame of video to save time
     global process_this_frame
     global faceCount
-    print(process_this_frame)
+    #print(process_this_frame)
     if process_this_frame==0:
         faceCount=0
         blacklist = blacklist_handler.process_one_pic(rgb_small_frame)
@@ -53,8 +53,8 @@ def handleframe(frame):
             result = handler.process_one_pic(rgb_small_frame)
             locs = result[0]
             names=result[1]
-        process_this_frame=10
-        print("reset!")
+        process_this_frame=20
+        #print("reset!")
     else:
         process_this_frame = process_this_frame-1
         return frame
