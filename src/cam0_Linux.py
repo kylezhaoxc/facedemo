@@ -21,7 +21,7 @@ out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
 starttime = datetime.datetime.now()
 NoFaceCountDown = -10
 MatchBlackList = False
-process_this_frame = True
+process_this_frame = 10
 font = cv2.FONT_HERSHEY_DUPLEX
 faceCount=0
 top=0
@@ -39,7 +39,7 @@ def handleframe(frame):
     # Only process every other frame of video to save time
     global process_this_frame
     global faceCount
-    if process_this_frame:
+    if process_this_frame==0:
         faceCount=0
         blacklist = blacklist_handler.process_one_pic(rgb_small_frame)
         global MatchBlackList
@@ -52,7 +52,9 @@ def handleframe(frame):
             result = handler.process_one_pic(rgb_small_frame)
             locs = result[0]
             names=result[1]
-    process_this_frame = not process_this_frame
+    process_this_frame = process_this_frame-1
+    if process_this_frame<0:
+        process_this_frame=10
     # Display the results
     global top
     global right 
