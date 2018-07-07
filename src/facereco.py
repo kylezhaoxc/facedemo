@@ -24,7 +24,7 @@ class face_reco:
                 if(file_path.endswith(".jpg")or file_path.endswith(".png")):
                     img = face_recognition.load_image_file(file_path)
                     encoding = face_recognition.face_encodings(img)[0]
-                    name = file_path.split('\\')[-1][0:-4]
+                    name = file_path.split('/')[-1][0:-4]
                     print (name)
                     
                     self.knownFaces.append(encoding)

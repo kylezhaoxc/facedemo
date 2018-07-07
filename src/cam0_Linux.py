@@ -1,14 +1,24 @@
 import cv2
 from facereco import face_reco
 import datetime
-import checkSum
+import serial
+import time
 from multiprocessing.pool import ThreadPool
-
+lastopentime=datetime.datetime.now()
+def send_open_command():
+    opencommand = b'\x55\xff\xff\x01\x00\x01\x01\x56\x88'
+    curr = datetime.datetime.now()
+    global lastopentime
+    if((curr-lastopentime).total_seconds()>15):    
+        time.sleep(1)
+        ser = serial.Serial('/dev/ttyUSB0',9600,timeout=1)
+        ser.write(opencommand)
+        lastopentime = curr
 
 pool = ThreadPool(processes=4)
 
-rootdir = "/home/pi/refImg"
-blackListDir = "/home/pi/blackList"
+rootdir = "/home/hd/refImg"
+blackListDir = "/home/hd/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
 blacklist_handler = face_reco()
@@ -96,6 +106,8 @@ while True:
         cv2.rectangle(outframe, (left, top), (right, bottom), (0, 255, 0), 2)
         cv2.rectangle(outframe, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
         cv2.putText(outframe, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
+    if(str(name)!='Unknown'):
+            send_open_command()
     else:
         cv2.rectangle(outframe, (left, top), (right, bottom), (255, 255, 255), 2)
         cv2.rectangle(outframe, (left, bottom - 35), (right, bottom), (255, 255, 255), cv2.FILLED)
