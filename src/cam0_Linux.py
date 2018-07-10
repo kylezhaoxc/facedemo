@@ -4,7 +4,10 @@ import datetime
 import serial
 import time
 import threading
+import queue
+import os
 
+imgqueue = queue.Queue()
 lastopentime=datetime.datetime.now()
 def send_open_command():
     opencommand = b'\x55\xff\xff\x01\x00\x01\x01\x56\x88'
@@ -32,6 +35,22 @@ NoFaceCountDown = -10
 MatchBlackList = False
 process_this_frame = True
 font = cv2.FONT_HERSHEY_DUPLEX
+def SaveVideoFromQueue():
+    global out,starttime,videoIndex
+    while True:
+        if(imgqueue.empty()):
+            continue
+        frame = imgqueue.get_nowait()
+        out.write(frame)
+        curr = datetime.datetime.now()
+        print((curr-starttime).total_seconds())
+        if (curr-starttime).total_seconds()>20:
+            starttime=curr
+            out.release()
+            videoIndex = videoIndex+1
+            out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
+videoThread = threading.Thread(target=SaveVideoFromQueue)
+videoThread.start()
 
 while True:
     # Grab a single frame of video
@@ -88,14 +107,9 @@ while True:
             NoFaceCountDown=50
     # Display the resulting image
     cv2.imshow('Video', frame)
-    out.write(frame)
-    curr = datetime.datetime.now()
-    if (curr-starttime).total_seconds()>3600:
-        starttime=curr
-        out.release()
-        videoIndex = videoIndex+1
-        out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
+    imgqueue.put_nowait(frame)
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-out.release()
+        out.release()
+        os._exit()
+
