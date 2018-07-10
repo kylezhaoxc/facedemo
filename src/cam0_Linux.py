@@ -19,8 +19,8 @@ def send_open_command():
         ser.write(opencommand)
         lastopentime = curr
     
-rootdir = "/home/hd/refImg"
-blackListDir = "/home/hd/blackList"
+rootdir = "/home/pi/refImg"
+blackListDir = "/home/pi/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
 blacklist_handler = face_reco()
