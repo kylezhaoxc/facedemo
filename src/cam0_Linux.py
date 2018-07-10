@@ -44,7 +44,7 @@ def SaveVideoFromQueue():
         out.write(frame)
         curr = datetime.datetime.now()
         print((curr-starttime).total_seconds())
-        if (curr-starttime).total_seconds()>20:
+        if (curr-starttime).total_seconds()>3600:
             starttime=curr
             out.release()
             videoIndex = videoIndex+1
