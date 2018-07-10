@@ -3,6 +3,7 @@ from facereco import face_reco
 import datetime
 import serial
 import time
+import threading
 
 lastopentime=datetime.datetime.now()
 def send_open_command():
@@ -12,6 +13,7 @@ def send_open_command():
     if((curr-lastopentime).total_seconds()>15):    
         time.sleep(1)
         print(opencommand)
+        time.sleep(1)
         #ser = serial.Serial('/dev/ttyUSB0',9600,timeout=1)
         #ser.write(opencommand)
         lastopentime = curr
@@ -67,6 +69,8 @@ while True:
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
             cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
             if(str(name)!='Unknown'):
+                #thread = threading.Thread(target = send_open_command)
+                #thread.start()
                 send_open_command()
         else:
             cv2.rectangle(frame, (left, top), (right, bottom), (255, 255, 255), 2)
