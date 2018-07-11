@@ -6,6 +6,12 @@ import time
 import threading
 import queue
 import sys
+import face_recognition
+from flask import Flask,request,make_response,Response
+from flask_cors import CORS
+import json
+import numpy as np
+
 lastopentime=datetime.datetime.now()
 imgqueue = queue.Queue()
 def send_open_command():
@@ -14,7 +20,7 @@ def send_open_command():
     global lastopentime
     if((curr-lastopentime).total_seconds()>5):    
         time.sleep(1)
-        print(opencommand)
+        #print(opencommand)
         time.sleep(1)
         #ser = serial.Serial('/dev/ttyUSB0',9600,timeout=1)
         #ser.write(opencommand)
@@ -46,7 +52,6 @@ def SaveVideoFromQueue():
         out.write(frame)
         time.sleep(1)
         curr = datetime.datetime.now()
-        print((curr-starttime).total_seconds())
         if (curr-starttime).total_seconds()>20:
             starttime=curr
             out.release()
@@ -54,6 +59,34 @@ def SaveVideoFromQueue():
             out=cv2.VideoWriter("cam0"+str(videoIndex)+".avi",fourcc,20.0,(640,480))
 videoThread = threading.Thread(target=SaveVideoFromQueue)
 videoThread.start()
+
+app=Flask(__name__)
+CORS(app)
+@app.route('/updateFeature',methods=['POST'])
+def getFeature():
+    global blacklist_handler,handler
+    metadata = request.data
+    #print(metadata)
+    meta = json.loads(metadata)
+    raw = json.loads(meta['metadataString'])
+    imgtype= meta['imgtype']
+    raw['face-data']=np.array(raw['face-data'])
+
+    if(imgtype=='blackList'):
+        blacklist_handler.knownFaces.append(raw['face-data'])
+        blacklist_handler.knownNames.append(raw['name'])
+        blacklist_handler.Save()
+    else:
+        handler.knownFaces.append(raw['face-data'])
+        handler.knownnames.append(raw['name'])
+        handler.Save()
+    return Response('OK')   
+def StartFlask():
+    global app
+    app.run(host='0.0.0.0',port=5001,debug = False)
+flaskThread = threading.Thread(target=StartFlask)
+flaskThread.start()
+
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
@@ -88,9 +121,8 @@ while True:
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
             cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
             if(str(name)!='Unknown'):
-                #thread = threading.Thread(target = send_open_command)
-                #thread.start()
-                send_open_command()
+                thread = threading.Thread(target = send_open_command)
+                thread.start()
         else:
             cv2.rectangle(frame, (left, top), (right, bottom), (255, 255, 255), 2)
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 255, 255), cv2.FILLED)

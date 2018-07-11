@@ -7,8 +7,10 @@ class face_reco:
     def __init__(self):
         self.knownFaces=[]
         self.knownNames=[]
+        self.folderpath=''
 
     def init_with_images(self,folderpath):
+        self.folderpath=folderpath
         if(os.path.isfile(folderpath+"/bak_face.json") and os.path.isfile(folderpath+"/bak_name.json")):
                 print("predifined model found, skipping loading images...")
                 facef = open(folderpath+"/bak_face.json","rb")
@@ -29,12 +31,14 @@ class face_reco:
                     
                     self.knownFaces.append(encoding)
                     self.knownNames.append(name)
-        facef = open(folderpath+"/bak_face.json","wb")
-        namef = open(folderpath+"/bak_name.json","wb")
+        self.Save()
+        print("Ready to go!")
+    
+    def Save(self):
+        facef = open(self.folderpath+"/bak_face.json","wb")
+        namef = open(self.folderpath+"/bak_name.json","wb")
         facef.write(pickle.dumps(self.knownFaces))
         namef.write(pickle.dumps(self.knownNames))
-        print("Ready to go!")
-
     def process_one_pic(self,frame):
         isMatch=False
         face_locations = face_recognition.face_locations(frame)

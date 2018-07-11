@@ -6,6 +6,11 @@ import time
 import threading
 import queue
 import os
+import face_recognition
+from flask import Flask,request,make_response,Response
+from flask_cors import CORS
+import json
+import numpy as np
 
 imgqueue = queue.Queue()
 lastopentime=datetime.datetime.now()
@@ -52,6 +57,32 @@ def SaveVideoFromQueue():
 videoThread = threading.Thread(target=SaveVideoFromQueue)
 videoThread.start()
 
+app=Flask(__name__)
+CORS(app)
+@app.route('/updateFeature',methods=['POST'])
+def getFeature():
+    global blacklist_handler,handler
+    metadata = request.data
+    #print(metadata)
+    meta = json.loads(metadata)
+    raw = json.loads(meta['metadataString'])
+    imgtype= meta['imgtype']
+    raw['face-data']=np.array(raw['face-data'])
+
+    if(imgtype=='blackList'):
+        blacklist_handler.knownFaces.append(raw['face-data'])
+        blacklist_handler.knownNames.append(raw['name'])
+        blacklist_handler.Save()
+    else:
+        handler.knownFaces.append(raw['face-data'])
+        handler.knownnames.append(raw['name'])
+        handler.Save()
+    return Response('OK')   
+def StartFlask():
+    global app
+    app.run(host='0.0.0.0',port=5001,debug = False)
+flaskThread = threading.Thread(target=StartFlask)
+flaskThread.start()
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
