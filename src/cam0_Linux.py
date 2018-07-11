@@ -48,7 +48,6 @@ def SaveVideoFromQueue():
         frame = imgqueue.get_nowait()
         out.write(frame)
         curr = datetime.datetime.now()
-        print((curr-starttime).total_seconds())
         if (curr-starttime).total_seconds()>3600:
             starttime=curr
             out.release()
