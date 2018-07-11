@@ -19,8 +19,8 @@ def send_open_command():
         ser.write(opencommand)
         lastopentime = curr
     
-rootdir = "/home/pi/refImg"
-blackListDir = "/home/pi/blackList"
+rootdir = "/home/hd/refImg"
+blackListDir = "/home/hd/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
 blacklist_handler = face_reco()
@@ -43,7 +43,6 @@ def SaveVideoFromQueue():
         frame = imgqueue.get_nowait()
         out.write(frame)
         curr = datetime.datetime.now()
-        print((curr-starttime).total_seconds())
         if (curr-starttime).total_seconds()>3600:
             starttime=curr
             out.release()
