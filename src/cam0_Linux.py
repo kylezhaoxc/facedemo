@@ -67,6 +67,7 @@ def getFeature():
 
     if(imgtype=='blackList'):
         handler.blackListNames.append(raw['name'])
+        handler.blackListNames.append(raw['name'])
     else:
         handler.knownNames.append(raw['name'])
     handler.knownFaces.append(raw['face-data'])

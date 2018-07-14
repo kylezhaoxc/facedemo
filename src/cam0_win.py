@@ -70,6 +70,7 @@ def getFeature():
     raw['face-data']=np.array(raw['face-data'])
 
     if(imgtype=='blackList'):
+        handler.knownNames.append(raw['name'])
         handler.blackListNames.append(raw['name'])
     else:
         handler.knownNames.append(raw['name'])
