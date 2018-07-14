@@ -1,5 +1,5 @@
 import cv2
-from facereco import face_reco
+from facereco_linux import face_reco
 import datetime
 import serial
 import time
@@ -25,11 +25,8 @@ def send_open_command():
         lastopentime = curr
     
 rootdir = "/home/hd/refImg"
-blackListDir = "/home/hd/blackList"
 handler = face_reco()
 handler.init_with_images(rootdir)
-blacklist_handler = face_reco()
-blacklist_handler.init_with_images(blackListDir)
 
 video_capture = cv2.VideoCapture(0)
 videoIndex = 0
@@ -60,7 +57,7 @@ app=Flask(__name__)
 CORS(app)
 @app.route('/updateFeature',methods=['POST'])
 def getFeature():
-    global blacklist_handler,handler
+    global handler
     metadata = request.data
     #print(metadata)
     meta = json.loads(metadata)
@@ -69,13 +66,12 @@ def getFeature():
     raw['face-data']=np.array(raw['face-data'])
 
     if(imgtype=='blackList'):
-        blacklist_handler.knownFaces.append(raw['face-data'])
-        blacklist_handler.knownNames.append(raw['name'])
-        blacklist_handler.Save()
+        handler.blackListNames.append(raw['name'])
     else:
-        handler.knownFaces.append(raw['face-data'])
-        handler.knownnames.append(raw['name'])
-        handler.Save()
+        handler.knownNames.append(raw['name'])
+    handler.knownFaces.append(raw['face-data'])
+    handler.Save()
+
     return Response('OK')   
 def StartFlask():
     global app
@@ -92,16 +88,13 @@ while True:
     # Only process every other frame of video to save time
     if process_this_frame:
         faceCount=0
-        blacklist = blacklist_handler.process_one_pic(rgb_small_frame)
-        if(blacklist[2]==True):
+        result = handler.process_one_pic(rgb_small_frame)
+        if(result[2]==True):
             MatchBlackList=True
-            locs = blacklist[0]
-            names=blacklist[1]
         else:
             MatchBlackList=False
-            result = handler.process_one_pic(rgb_small_frame)
-            locs = result[0]
-            names=result[1]
+        locs = result[0]
+        names=result[1]
     process_this_frame = not process_this_frame
     # Display the results
     for (top, right, bottom, left), name in zip(locs, names):
