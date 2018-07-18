@@ -11,6 +11,19 @@ from flask import Flask,request,make_response,Response
 from flask_cors import CORS
 import json
 import numpy as np
+import socket
+
+def SendHeartBeat():
+    host=socket.gethostname()
+    port = 7100
+    while (True):
+        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.connect((host,port))
+        s.sendall(b'\x7e\x00\x00\x01\xff\x01\x00\x01\x01\x74\x4e')
+        s.close()
+        time.sleep(5)
+hbThread = threading.Thread(target=SendHeartBeat)
+hbThread.start()        
 
 lastopentime=datetime.datetime.now()
 imgqueue = queue.Queue()
