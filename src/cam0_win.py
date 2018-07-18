@@ -39,7 +39,8 @@ NoFaceCountDown = -10
 MatchBlackList = False
 process_this_frame = True
 font = cv2.FONT_HERSHEY_DUPLEX
-
+locs = []
+names = []
 def SaveVideoFromQueue():
     global out,starttime,videoIndex,imgqueue
     while True:
@@ -84,6 +85,16 @@ def StartFlask():
 flaskThread = threading.Thread(target=StartFlask)
 flaskThread.start()
 
+def CVReco(rgb_small_frame):
+    global faceCount,handler,MatchBlackList,locs,names
+    faceCount=0
+    result = handler.process_one_pic(rgb_small_frame)
+    if(result[2]==True):
+        MatchBlackList=True
+    else:
+        MatchBlackList=False
+    locs = result[0]
+    names=result[1]
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
@@ -93,14 +104,8 @@ while True:
     rgb_small_frame = small_frame[:, :, ::-1]
     # Only process every other frame of video to save time
     if process_this_frame:
-        faceCount=0
-        result = handler.process_one_pic(rgb_small_frame)
-        if(result[2]==True):
-            MatchBlackList=True
-        else:
-            MatchBlackList=False
-        locs = result[0]
-        names=result[1]
+        cvthread = threading.Thread(target = CVReco,args = (rgb_small_frame,))
+        cvthread.start()
     process_this_frame = not process_this_frame
     # Display the results
     for (top, right, bottom, left), name in zip(locs, names):
