@@ -13,18 +13,6 @@ import json
 import numpy as np
 import socket
 
-def SendHeartBeat():
-    host=socket.gethostname()
-    port = 7100
-    while (True):
-        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        s.connect((host,port))
-        s.sendall(b'\x7e\x00\x00\x01\xff\x01\x00\x01\x01\x74\x4e')
-        s.close()
-        time.sleep(5)
-hbThread = threading.Thread(target=SendHeartBeat)
-hbThread.start()        
-
 imgqueue = queue.Queue()
 lastopentime=datetime.datetime.now()
 def send_open_command():
@@ -89,7 +77,7 @@ def getFeature():
     handler.knownFaces.append(raw['face-data'])
     handler.Save()
 
-    return Response('OK')   
+    return Response('ok')   
 def StartFlask():
     global app
     app.run(host='0.0.0.0',port=5001,debug = False)
