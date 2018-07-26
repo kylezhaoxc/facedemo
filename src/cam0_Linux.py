@@ -25,7 +25,7 @@ def send_open_command():
         ser.write(opencommand)
         lastopentime = curr
     
-rootdir = "/home/hd/refImg"
+rootdir = "/home/pi/refImg"
 handler = face_reco()
 handler.init_with_images(rootdir)
 
@@ -110,22 +110,22 @@ while True:
     # Display the results
     for (top, right, bottom, left), name in zip(locs, names):
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
+#        top *= 4
+#        right *= 4
+#        bottom *= 4
+#        left *= 4
         # Draw a box around the face
         if(MatchBlackList==False):
-            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-            cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
+            cv2.rectangle(small_frame, (left, top), (right, bottom), (0, 255, 0), 2)
+            cv2.rectangle(small_frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+            cv2.putText(small_frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
             if(str(name)!='Unknown'):
                 thread = threading.Thread(target = send_open_command)
                 thread.start()
         else:
-            cv2.rectangle(frame, (left, top), (right, bottom), (255, 255, 255), 2)
-            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 255, 255), cv2.FILLED)
-            cv2.putText(frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
+            cv2.rectangle(small_frame, (left, top), (right, bottom), (255, 255, 255), 2)
+            cv2.rectangle(small_frame, (left, bottom - 35), (right, bottom), (255, 255, 255), cv2.FILLED)
+            cv2.putText(small_frame, str(name), (left + 6, bottom - 6), font, 0.8, (0, 0, 0), 1)
         faceCount=faceCount+1
         # Draw a label with a name below the face
     if(MatchBlackList==True):
@@ -133,15 +133,15 @@ while True:
     else:
         if(faceCount==0):
             if(NoFaceCountDown>0):
-                cv2.putText(frame, "Shaded", (0, 30), font, 1.5, (0, 255, 255), 2)
+                cv2.putText(small_frame, "Shaded", (0, 30), font, 1.5, (0, 255, 255), 2)
                 NoFaceCountDown=NoFaceCountDown-1
             else:
-                cv2.putText(frame, "Not Started", (0, 30), font, 1.5, (0, 0, 255), 2)
+                cv2.putText(small_frame, "Not Started", (0, 30), font, 1.5, (0, 0, 255), 2)
         else:
             NoFaceCountDown=50
     # Display the resulting image
-    cv2.imshow('Video', frame)
-    imgqueue.put_nowait(frame)
+    cv2.imshow('Video', small_frame)
+    imgqueue.put_nowait(small_frame)
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         out.release()

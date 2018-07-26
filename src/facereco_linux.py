@@ -12,11 +12,11 @@ class face_reco:
 
     def init_with_images(self,folderpath):
         self.folderpath=folderpath
-        if(os.path.isfile(folderpath+"\\bak_face.json") and os.path.isfile(folderpath+"\\bak_name.json") and os.path.isfile(folderpath+"\\bak_blname.json")):
+        if(os.path.isfile(folderpath+"/bak_face.json") and os.path.isfile(folderpath+"/bak_name.json") and os.path.isfile(folderpath+"/bak_blname.json")):
                 print("predifined model found, skipping loading images...")
-                facef = open(folderpath+"\\bak_face.json","rb")
-                namef = open(folderpath+"\\bak_name.json","rb")
-                blnamef = open(folderpath+"\\bak_blname.json","rb")
+                facef = open(folderpath+"/bak_face.json","rb")
+                namef = open(folderpath+"/bak_name.json","rb")
+                blnamef = open(folderpath+"/bak_blname.json","rb")
                 self.knownFaces = pickle.loads(facef.read())
                 self.knownNames = pickle.loads(namef.read())
                 self.blackListNames = pickle.loads(blnamef.read())
@@ -24,26 +24,26 @@ class face_reco:
                 print(len(self.knownNames))
                 print(len(self.blackListNames))
                 return
-        for parent,dirnames,filenames in os.walk(folderpath+"\\whiteList"):          
+        for parent,dirnames,filenames in os.walk(folderpath+"/whiteList"):          
             print("Loading known images")
             for filename in filenames:
                 file_path = os.path.join(parent,filename)
                 if(file_path.endswith(".jpg")or file_path.endswith(".png")):
                     img = face_recognition.load_image_file(file_path)
                     encoding = face_recognition.face_encodings(img)[0]
-                    name = file_path.split('\\')[-1][0:-4]
+                    name = file_path.split('/')[-1][0:-4]
                     print (name)
                     
                     self.knownFaces.append(encoding)
                     self.knownNames.append(name)
-        for parent,dirnames,filenames in os.walk(folderpath+"\\blackList"):          
+        for parent,dirnames,filenames in os.walk(folderpath+"/blackList"):          
             print("Loading known images")
             for filename in filenames:
                 file_path = os.path.join(parent,filename)
                 if(file_path.endswith(".jpg")or file_path.endswith(".png")):
                     img = face_recognition.load_image_file(file_path)
                     encoding = face_recognition.face_encodings(img)[0]
-                    name = file_path.split('\\')[-1][0:-4]
+                    name = file_path.split('/')[-1][0:-4]
                     print (name)
                     
                     self.knownFaces.append(encoding)
@@ -53,9 +53,9 @@ class face_reco:
         print("Ready to go!")
     
     def Save(self):
-        facef = open(self.folderpath+"\\bak_face.json","wb")
-        namef = open(self.folderpath+"\\bak_name.json","wb")
-        blnamef = open(self.folderpath+"\\bak_blname.json","wb")
+        facef = open(self.folderpath+"/bak_face.json","wb")
+        namef = open(self.folderpath+"/bak_name.json","wb")
+        blnamef = open(self.folderpath+"/bak_blname.json","wb")
         facef.write(pickle.dumps(self.knownFaces))
         namef.write(pickle.dumps(self.knownNames))
         blnamef.write(pickle.dumps(self.blackListNames))
