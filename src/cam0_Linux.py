@@ -25,7 +25,7 @@ def send_open_command():
         ser.write(opencommand)
         lastopentime = curr
     
-rootdir = "/home/pi/refImg"
+rootdir = "/home/hd/refImg"
 handler = face_reco()
 handler.init_with_images(rootdir)
 
@@ -62,7 +62,7 @@ CORS(app)
 @app.route('/updateFeature',methods=['POST'])
 def getFeature():
     global handler
-    metadata = request.data
+    metadata = str(request.data,encoding="utf-8")
     #print(metadata)
     meta = json.loads(metadata)
     raw = json.loads(meta['metadataString'])
